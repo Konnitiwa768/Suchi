@@ -1,0 +1,26 @@
+import clientPromise from "../lib/mongo.js";
+
+export default async (req, res) => {
+  const { username, password } = req.query;
+  if (!username || !password) return res.status(400).send("Missing fields");
+
+  const client = await clientPromise;
+  const db = client.db("hirocoin");
+  const users = db.collection("users");
+
+  const existing = await users.findOne({ username });
+  if (existing) return res.status(400).send("User exists");
+
+  await users.insertOne({
+    username,
+    password,
+    hiro: 0,
+    challe: 0,
+    factory: 1,
+    lastLogin: Date.now(),
+    lastLoginDate: "",
+    loginStreak: 0
+  });
+
+  res.status(200).send("Registered");
+};
