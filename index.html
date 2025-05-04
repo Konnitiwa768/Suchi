@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>ヒロコインLite</title>
+  <style>
+    body { font-family: sans-serif; background: #f7f7f7; margin: 2em; }
+    input, button { margin: 4px; padding: 5px; }
+    section { margin-bottom: 20px; background: white; padding: 1em; border-radius: 8px; box-shadow: 0 0 5px #ccc; }
+  </style>
+</head>
+<body>
+  <h2>ヒロコインLite管理</h2>
+
+  <section>
+    <h3>登録</h3>
+    <input id="reg_user" placeholder="ユーザー名">
+    <input id="reg_pass" placeholder="パスワード">
+    <button onclick="register()">登録</button>
+  </section>
+
+  <section>
+    <h3>ログイン</h3>
+    <input id="log_user" placeholder="ユーザー名">
+    <input id="log_pass" placeholder="パスワード">
+    <button onclick="login()">ログイン</button>
+    <div id="login_result"></div>
+  </section>
+
+  <section>
+    <h3>送金</h3>
+    <input id="from_user" placeholder="送信者">
+    <input id="to_user" placeholder="受信者">
+    <input id="amount" placeholder="金額">
+    <button onclick="donate()">送金</button>
+  </section>
+
+  <section>
+    <h3>全ユーザー一覧</h3>
+    <button onclick="listUsers()">表示</button>
+    <pre id="user_list"></pre>
+  </section>
+
+  <script>
+    async function register() {
+      const u = reg_user.value, p = reg_pass.value;
+      const res = await fetch(`/api/register?username=${u}&password=${p}`);
+      alert(await res.text());
+    }
+
+    async function login() {
+      const u = log_user.value, p = log_pass.value;
+      const res = await fetch(`/api/login?username=${u}&password=${p}`);
+      const data = await res.json();
+      login_result.innerText = `ユーザー: ${data.username}, ヒロ: ${data.hiro.toFixed(2)}, チャレ: ${data.challe}`;
+    }
+
+    async function donate() {
+      const from = from_user.value, to = to_user.value, amt = amount.value;
+      const res = await fetch(`/api/donate?from=${from}&to=${to}&amount=${amt}`);
+      alert(await res.text());
+    }
+
+    async function listUsers() {
+      const res = await fetch(`/api/userinfo`);
+      const data = await res.json();
+      user_list.innerText = JSON.stringify(data, null, 2);
+    }
+  </script>
+</body>
+</html>
